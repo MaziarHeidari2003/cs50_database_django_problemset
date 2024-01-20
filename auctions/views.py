@@ -24,6 +24,7 @@ def create_listing(request):
         price = request.POST['price']
         category = request.POST['category']
         current_user = request.user
+        print(current_user)
 
         category_data = Category.objects.get(category_name=category)
 
@@ -89,3 +90,7 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+
+create_listing()
