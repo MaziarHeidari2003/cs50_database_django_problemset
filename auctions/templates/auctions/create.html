@@ -3,12 +3,41 @@
 
 {% block body %}
     <h2>Create New Listings</h2>
-    <form action="{% url 'create' %}">
+    <form action="{% url 'create' %}" method="POST">
+      {% csrf_token %}
+
       <div class="form-group">
-        <label for="exampleInputEmail1">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <label for="title">Title</label>
+        <input type="text" name="title" class="form-control" id="title" placeholder="title">
       </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" name="description" class="form-control" id="description" placeholder="description">
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price</label>
+        <input type="text" name="price" class="form-control" id="price" placeholder="price">
+      </div>
+
+      <div class="form-group">
+        <label for="imageurl">Image URL</label>
+        <input type="text" name="imageurl" class="form-control" id="imageurl" placeholder="imageurl">
+      </div>
+
+      <div class="form-groups">
+          <label for="category">Choose a car:</label>
+          <select name="category" id="category">
+              {% for cat in categories %}
+                  <option value="{{cat}}">{{cat}}</option>
+              {% endfor %}
+          </select>
+      </div>
+
+
+      <button type="submit" class="btn btn-success">Create New Listing</button>
+
     </form>
 
   

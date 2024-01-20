@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User,Category,Listing
 
 
 def index(request):
@@ -13,7 +13,30 @@ def index(request):
 
 def create_listing(request):
     if request.method == "GET":
-        return render(request,"auctions/create.html") 
+        all_categories = Category.objects.all()
+        return render(request,"auctions/create.html", {
+            "categories": all_categories
+        }) 
+    else:
+        title = request.POST["title"]
+        description = request.POST['description']
+        imageurl = request.POST['imageurl']
+        price = request.POST['price']
+        category = request.POST['category']
+        current_user = request.user
+
+        category_data = Category.objects.get(category_name=category)
+
+        new_listing = Listing(
+            title=title,
+            description=description,
+            price=float(price),
+            category=category_data,
+            owner=current_user
+        )
+        new_listing.save()
+
+        return HttpResponseRedirect(reverse('index'))
 
 
 def login_view(request):
