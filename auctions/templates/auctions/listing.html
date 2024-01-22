@@ -1,0 +1,9 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <h2>Pokemon: {{listing.title}}</h2>
+  <img src="{{listing.iamgeurl}}" alt="{{listing.title}}" height="480px">
+  <p>{{lsiting.description}}</p>
+  <p>{{listing.owner}}</p>
+  <h6>{{listing.price}}</h6>
+{% endblock %}
