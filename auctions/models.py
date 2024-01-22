@@ -16,6 +16,6 @@ class Listing(models.Model):
     description = models.CharField(max_length=300)
     image_url = models.CharField(max_length=1000)
     price = models.FloatField()
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(default=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="user")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True,blank=True, related_name="category")
