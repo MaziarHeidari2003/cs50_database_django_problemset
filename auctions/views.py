@@ -16,66 +16,32 @@ def index(request):
     })
 
 
-def remove_watchlist(request,id):
-    listing_data = Listing.objects.get(pk=id)
-    current_user = request.user
-    listing_data.watch_list.remove(current_user)
-    return HttpResponseRedirect(reverse("listing",args=(id, )))
-
-def add_watchlist(request,id):
-    listing_data = Listing.objects.get(pk=id)
-    current_user = request.user
-    listing_data.watch_list.add(current_user)
-    return HttpResponseRedirect(reverse("listing",args=(id, )))
-
-
-def listing(request, id):
-    listing_data = Listing.objects.get(pk=id)
-    is_listing_in_watchlist = request.user in listing_data.watch_list.all()
-    return render(request, "auctions/listing.html", {
-        "listing":listing_data,
-        "is_listing_in_watchlist": is_listing_in_watchlist
-    })
-
-def display_category(request):
-    if request.method == "POST":
-        category_from_form = request.POST['category']
-        category = Category.objects.get(category_name=category_from_form)
-        active_listings = Listing.objects.filter(is_active=True, category=category)
-    all_categories = Category.objects.all()
-    return render(request, "auctions/index.html",{
-        "listings": active_listings,
-        "categories": all_categories
-    })
-
-
 def create_listing(request):
-    if request.method == "GET":
-        all_categories = Category.objects.all()
-        return render(request,"auctions/create.html", {
-            "categories": all_categories
-        }) 
+    if request.method == 'GET':
+        all_category = Category.objects.all()
+        return render(request,'auctions/create.html',{
+            "categories":all_category
+        })
     else:
-        title = request.POST["title"]
+        title = request.POST['title']
         description = request.POST['description']
-        imageurl = request.POST['imageurl']
+        image_url = request.POST['image_url']
         price = request.POST['price']
         category = request.POST['category']
         current_user = request.user
 
-        category_data = Category.objects.get(category_name=category)
-
         new_listing = Listing(
             title=title,
             description=description,
+            image_url=image_url,
             price=float(price),
-            category=category_data,
-            owner=current_user
-        )
+            category=category,
+            owner=current_user 
+              )
+
         new_listing.save()
 
-        return HttpResponseRedirect(reverse('index'))
-
+        return HttpResponseRedirect(reverse(index))
 
 def login_view(request):
     if request.method == "POST":
