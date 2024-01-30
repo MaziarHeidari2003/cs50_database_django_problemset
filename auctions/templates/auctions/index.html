@@ -2,7 +2,19 @@
 
 {% block body %}
     <h2>Active Listing</h2>
-    TODO
+    <div class="row mx-3">
+        {% for listing in listings %}
+        <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{{image_url}}" alt="{{listing.title}}">
+                <div class="card-body">
+                <h5 class="card-title">{{listing.title}}</h5>
+                <p class="card-text">{{listing.description}}</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+        </div>
+    {% endfor %}
 
+    </div>
+    
 
 {% endblock %}
