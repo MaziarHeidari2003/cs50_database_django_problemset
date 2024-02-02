@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User,Category,Listing
+from .models import User,Category,Listing,Comment,Bid
 
 
 def index(request):
@@ -14,6 +14,68 @@ def index(request):
         "listings": active_listings,
         "categories": all_categories
     })
+    return HttpResponseRedirect(reverse('listing',args=(id, )))
+
+
+def add_comment(request,id):
+    current_user = request.user
+    listing_data = Listing.objects.get(pk=id)
+    message = request.POST['new_comment']
+
+    new_comment = Comment(
+        author=current_user,
+        listing=listing_data,
+        message=message
+    )
+
+    new_comment.save()
+    return HttpResponseRedirect(reverse("listing",args=(id,)))
+
+
+def listing(request,id):
+    listing_data = Listing.objects.get(pk=id)
+    all_comments = Comment.objects.filter(listing=listing_data)
+    is_listing_watch_list = request.user in listing_data.watch_list.all()
+    return render(request, 'auctions/listing.html',{
+        'listing':listing_data,
+        'is_listing_watch_list': is_listing_watch_list,
+        'all_comments': all_comments
+    })
+
+def watch_list(request):
+    current_user = request.user
+    listings = current_user.listing_watch_list.all()
+    return render(request, 'auctions/watchlist.html',{
+        'listings': listings
+    })
+
+
+def remove_watch_list(request,id):
+    listing_data = Listing.objects.get(pk=id)
+    current_user = request.user
+    listing_data.watch_list.remove(current_user)
+    return HttpResponseRedirect(reverse("listing",args=(id,)))
+
+
+def add_watch_list(request,id):
+    listing_data = Listing.objects.get(pk=id)
+    current_user = request.user
+    listing_data.watch_list.add(current_user)
+    return HttpResponseRedirect(reverse("listing",args=(id,)))
+
+
+def display_category(request):
+    if request.method == "POST":
+        category_from_form = request.POST['category']
+        category = Category.objects.get(category_name=category_from_form)
+        active_listings = Listing.objects.filter(is_active=True, category=category)
+        all_categories = Category.objects.all()
+        return render(request,'auctions/index.html',{
+            "listings": active_listings,
+            "categories": all_categories
+        })
+
+
 
 
 def create_listing(request):
@@ -31,12 +93,14 @@ def create_listing(request):
         current_user = request.user
 
         category_data = Category.objects.get(category_name=category)
+        bid = Bid(bid=float(price), user=current_user)
+        bid.save()
 
         new_listing = Listing(
             title=title,
             description=description,
             image_url=image_url,
-            price=float(price),
+            price=bid,
             category=category_data,
             owner=current_user 
               )
