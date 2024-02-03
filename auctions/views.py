@@ -36,10 +36,12 @@ def listing(request,id):
     listing_data = Listing.objects.get(pk=id)
     all_comments = Comment.objects.filter(listing=listing_data)
     is_listing_watch_list = request.user in listing_data.watch_list.all()
+    is_owner = request.user.username == listing_data.owner.username 
     return render(request, 'auctions/listing.html',{
         'listing':listing_data,
         'is_listing_watch_list': is_listing_watch_list,
-        'all_comments': all_comments
+        'all_comments': all_comments,
+        'is_owner': is_owner
     })
 
 def watch_list(request):
@@ -160,5 +162,50 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
+
+def add_bid(request,id):
+    new_bid = int(request.POST['new_bid'])
+    listing_data = Listing.objects.get(pk=id)
+    all_comments = Comment.objects.filter(listing=listing_data)
+    is_listing_watch_list = request.user in listing_data.watch_list.all()
+    if new_bid > listing_data.price.bid:
+        update_bid = Bid(user=request.user, bid=new_bid)
+        update_bid.save()
+        listing_data.price = update_bid
+        listing_data.save()
+        return render(request,'auctions/listing.html', {
+            'listing': listing_data,
+            'message': 'Bid was updated successfully',
+            'updated': True,
+            'is_listing_watch_list': is_listing_watch_list,
+            'all_comments': all_comments
+
+        })
+    else:
+         return render(request,'auctions/listing.html', {
+            'listing': listing_data,
+            'message': 'Bid was not updated successfully',
+            'update': False,
+             'is_listing_watch_list': is_listing_watch_list,
+            'all_comments': all_comments
+        })
+    
+
+
+def close_auction(request,id):
+    listing_data = Listing.objects.get(pk=id)
+    listing_data.is_active = False
+    listing_data.save()
+    all_comments = Comment.objects.filter(listing=listing_data)
+    is_listing_watch_list = request.user in listing_data.watch_list.all()
+    return render(request,'auctions/listing.html', {
+            'listing': listing_data,
+            'update': False,
+             'is_listing_watch_list': is_listing_watch_list,
+            'all_comments': all_comments,
+            'message': 'Congratulations, your auction is closed'
+    })
+    
 
 

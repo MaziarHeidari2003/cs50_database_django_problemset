@@ -1,11 +1,33 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+<div class="container">
+  {% if message %}
+    {% if updated %}  
+      <div class="alert alert-success" role="alert">
+        {{message}}
+      </div>
+    {% else %}
+      <div class="alert alert-danger" role="alert">
+        {{message}}
+      </div>  
+    {% endif %}
+  {% endif %}  
 
+</div>
 
-<div class="row">
-    {% if user.is_authenticated %}
+<div class="row mx-3">
+    {% if user.is_authenticated and lisitng.is_active %}
         {% if is_listing_watch_list %}
+            {% if is_owner %}
+              <form action="{% url 'close_auction' id=listing.id %}" method="POST" class="mx-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Close</button>
+              </form>
+            {% endif %}  
+                  
+
+
           <form action="{% url 'remove_watch_list' id=listing.id %}" method="POST">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger">Remove From Watchlist</button>
@@ -24,7 +46,20 @@
 <img src="{{listing.image_url}}" alt="{{image.title}}" height="480px">
 <p>{{listing.description}}</p>
 <p>Owner: {{listing.owner}}</p>
-<h6>price: {{listing.price}}</h6>
+<h6>price: {{listing.price.bid}}</h6>
+
+{%  if user.is_authenticated %}
+  <form action="{% url 'add_bid' id=listing.id %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+          <label for="price">Add Bid</label>
+          <input type="number" min="0" placeholder="add new bid" name="new_bid">
+    <div class="btn btn-primary">
+      <button type="submit" class="btn btn-primary">Add</button>
+    </div>  
+  </form>
+{% endif %}
+{{message}}
 
   <h2>Comment</h2>
   {% if user.is_authenticated %}
