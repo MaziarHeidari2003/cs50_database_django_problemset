@@ -16,7 +16,7 @@ class Category(models.Model):
 
 class Bid(models.Model):
   bid = models.FloatField(default=0)
-  user = models.ForeignKey(User,on_delete=models.CASCADE, blank='True', null='True', related_name='user_bid')
+  user = models.ForeignKey(User,on_delete=models.CASCADE, blank=True, null=True, related_name='user_bid')
 
   def __str__(self):
     return self.bid
@@ -30,7 +30,7 @@ class Listing(models.Model):
   price = models.ForeignKey(Bid, on_delete=models.CASCADE, blank=True, null=True, related_name='bid_price')
   owner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='user')
   category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True, related_name="category" )
-  watch_list=models.ManyToManyField(User,blank=True, null=True, related_name='listing_watch_list')
+  watch_list=models.ManyToManyField(User,blank=True, related_name='listing_watch_list')
 
   def __str__(self):
     return self.title
