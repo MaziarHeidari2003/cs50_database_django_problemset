@@ -157,8 +157,10 @@ def add_comment(request,id):
 
     all_comments = Comment.objects.all()
 
-    return HttpResponseRedirect(reverse("listing",args=(id,)))
-
+    return render(request,'auctions/listing.html',{
+        'listing':listing_data,
+        'all_comments':all_comments,
+    })
 
 
 
