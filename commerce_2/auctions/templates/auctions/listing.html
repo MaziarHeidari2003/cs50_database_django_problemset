@@ -1,0 +1,80 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if message %}
+  {% if updated %}
+    <div class="alert alert-success" role="alert">
+      {{message}}
+    </div>
+  
+  {% else %}
+    <div class="alert alert-danger" role="alert">
+      {{message}}
+    </div>
+  {% endif %}
+
+{% endif %}
+
+
+
+<h2>Listing</h2>
+{% if user.is_authenticated %}
+    {% if is_listing_in_watchlist %}
+        <form action="{% url 'remove_watchlist' id=listing.id %} " method="POST">
+          {% csrf_token %}
+          <button class="btn btn-danger" type="submit">Remove from Watchlist</button>
+        </form>
+    {% else %}
+        <form action="{% url 'add_watchlist' id=listing.id %}" method="POST">
+          {% csrf_token %}
+          <button class="btn btn-success" type="submit">Add to Watchlist</button>
+        </form>  
+    {% endif %}
+{% endif %}
+
+    <div class="card" style="width: 18rem;">
+      <img class="card-img-top" src="{{listing.image_url}}" alt="{{listing.title}}">
+      <div class="card-body">
+        <h5 class="card-title">{{listing.title}}</h5>
+        <p class="card-text">{{listing.description}}</p>
+        <a href="#" class="btn btn-primary">Details</a>
+        <h5>Iitial Price: {{listing.price.bid}}</h5>
+      </div>
+    </div>
+
+    <div>
+        <form action="{% url 'add_bid' id=listing.id %}" method="POST">
+          {% csrf_token %}
+          <input type="number" min="'0" name="new_bid">
+          <button type="submit">Add Bid</button>
+        </form>
+    </div>
+
+
+    <h2>Comments</h2>
+    {% if user.is_authenticated %}
+      <form action="{% url 'add_comment' id=listing.id %}" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="title">Add Comment</label>
+            <input type="text" placeholder="add new comment" name="new_comment">
+          <div class="btn btn-warning">
+            <button type="submit" class="btn btn-warning">Add</button>
+          </div>  
+          </div>
+      </form>
+    {% endif %}  
+
+
+      <ul class="list-group">
+        {% for comment in all_comments %}
+          <li class="list-group-item">
+              {{comment.message}}
+              <p>Posted by {{comment.author}}</p>
+          </li>
+        {% endfor %}
+      </ul>
+
+
+{% endblock %}
